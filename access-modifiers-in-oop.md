@@ -2,7 +2,8 @@
 
 In TypeScript, access modifiers (public, private, protected, and readonly) control the visibility and mutability of class properties and methods.
 
-## Public
+## public
+
 Any property or method without an explicit modifier defaults to public and has global reach. It can be modified accessed and modified from inside the class, inside the child classes and instantiated objects.
 
 ```ts
@@ -20,37 +21,91 @@ class User {
   }
 }
 
-const user = new User("alex_dev", "Admin");
-console.log(user.username); // Allowed: "alex_dev"
-user.role = "Editor";       // Allowed
-
+const user = new User("dhruba", "Admin");
+console.log(user.username); // Allowed: "dhruba"
+user.role = "Editor"; // Allowed
 ```
 
-`instanceof` is the check for class instances. A function may accept `Error | string`. Calling `error.message` is only safe after `value instanceof Error`. This matters in async code, where a rejected Promise often carries an `Error` but a caller might also pass a plain string.
+## private
+
+Members marked as private are only accessible within the exact class where they are declared. Neither external code nor subclasses can read or modify them.
 
 ```ts
-function readMessage(value: Error | string): string {
-  if (value instanceof Error) {
-    return value.message;
+class BankAccount {
+  private balance: number;
+
+  constructor(initialBalance: number) {
+    this.balance = initialBalance;
   }
 
-  return value;
+  public deposit(amount: number): void {
+    if (amount > 0) {
+      this.balance += amount; // Allowed inside the class
+    }
+  }
+
+  public getBalance(): number {
+    return this.balance;
+  }
 }
+
+const account = new BankAccount(100);
+account.deposit(50);
+console.log(account.getBalance()); // Allowed: 150
+// console.log(account.balance);   // Error: Property 'balance' is private
 ```
 
-The `in` operator narrows object unions by property names. If one shape has `students` and another has `salary`, checking `"students" in item` tells TypeScript which object you are holding. That is more precise than casting.
+## protected
+
+Members marked as protected behave like private members to the outside world, but they remain accessible inside subclasses that inherit from the parent class.
 
 ```ts
-type Course = { title: string; students: number };
-type Staff = { name: string; salary: number };
+class Employee {
+  protected salary: number;
 
-function label(item: Course | Staff): string {
-  if ("students" in item) {
-    return item.title;
+  constructor(salary: number) {
+    this.salary = salary;
+  }
+}
+
+class Manager extends Employee {
+  public giveRaise(amount: number): void {
+    this.salary += amount; // Allowed inside a subclass
   }
 
-  return item.name;
+  public getSalary(): number {
+    return this.salary;
+  }
 }
+
+const mgr = new Manager(80000);
+mgr.giveRaise(5000);
+console.log(mgr.getSalary()); // Allowed: 85000
+// console.log(mgr.salary);   // Error: Property 'salary' is protected
 ```
 
-Narrowing does not change the value at runtime. It only records the result of a check so later code can use the matching API. I now write the check first, then the operation, instead of forcing a type with `as`.
+## readonly
+
+The readonly modifier prevents a property from being reassigned after it is initialized. It can only be assigned a value at declaration or inside the class constructor, and it can be combined with public, private, or protected.
+
+```ts
+class ServerConfig {
+  public readonly host: string;
+  private readonly apiKey: string;
+
+  constructor(host: string, apiKey: string) {
+    this.host = host; // Allowed in constructor
+    this.apiKey = apiKey; // Allowed in constructor
+  }
+
+  public updateHost(newHost: string): void {
+    // this.host = newHost; // Error: Cannot assign to 'host' because it is a read-only property
+  }
+}
+
+const config = new ServerConfig("localhost", "secret_123");
+console.log(config.host); // Allowed: "localhost"
+// config.host = "127.0.0.1"; // Error: Read-only property
+```
+
+TypeScript’s access modifiers establish clear boundaries around your class data to protect internal state and enforce clean object-oriented architecture. Together, these modifiers catch unintended mutations and unauthorized access at compile time, making codebase more predictable, secure, and easier to refactor.

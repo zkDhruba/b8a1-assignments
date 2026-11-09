@@ -20,4 +20,7 @@ interface User {
 Another one is type versality of type aliases. Type aliases offer broader utility because they can represent non-object shapes like union types (type Status = "open" | "closed"), tuples (type Pair = [string, number]), and primitive aliases (type ID = string), which interfaces cannot express directly.
 
 ## When we should choose one over the other
+Interfaces are primarily designed for defining object shapes and support extension and declaration merging.
+Type Aliases are suitable for unions, tuples, primitive types, function types, and object types.
+
 We should use interfaces wherever we can, specifically defining object shapes, and if we can't use interface then we should use type aliases.

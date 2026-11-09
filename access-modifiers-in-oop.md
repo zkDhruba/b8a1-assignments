@@ -108,4 +108,4 @@ console.log(config.host); // Allowed: "localhost"
 // config.host = "127.0.0.1"; // Error: Read-only property
 ```
 
-TypeScript’s access modifiers establish clear boundaries around your class data to protect internal state and enforce clean object-oriented architecture. Together, these modifiers catch unintended mutations and unauthorized access at compile time, making codebase more predictable, secure, and easier to refactor.
+TypeScript’s access modifiers establish clear boundaries around class data to protect internal state and enforce clean object-oriented architecture. Together, these modifiers catch unintended mutations and unauthorized access at compile time, making codebase more predictable, secure, and easier to refactor.

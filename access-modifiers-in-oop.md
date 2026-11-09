@@ -1,17 +1,29 @@
-# Type Narrowing in TypeScript
+# Access Modifiers (public, private, protected, and readonly) in TypeScript OOP
 
-Type narrowing is how TypeScript turns a wide type into a smaller, safer type after a runtime check. Union parameters stay unsafe until the compiler knows which member you currently have. The `processInput` task is a direct example: the value may be a string, a number, or a boolean.
+In TypeScript, access modifiers (public, private, protected, and readonly) control the visibility and mutability of class properties and methods.
 
-`typeof` is the first tool. After `typeof input === "string"`, TypeScript treats `input` as a string inside that block, so `trim()` is legal. In the number branch, multiplication is legal. Without those checks, the same operations would be type errors.
+## Public
+Any property or method without an explicit modifier defaults to public and has global reach. It can be modified accessed and modified from inside the class, inside the child classes and instantiated objects.
 
 ```ts
-function processInput(input: string | number): string | number {
-  if (typeof input === "string") {
-    return input.trim().toLowerCase();
+class User {
+  public username: string;
+  role: string; // Implicitly public
+
+  constructor(username: string, role: string) {
+    this.username = username;
+    this.role = role;
   }
 
-  return input * 10;
+  public greet(): string {
+    return `Hello, ${this.username}`;
+  }
 }
+
+const user = new User("alex_dev", "Admin");
+console.log(user.username); // Allowed: "alex_dev"
+user.role = "Editor";       // Allowed
+
 ```
 
 `instanceof` is the check for class instances. A function may accept `Error | string`. Calling `error.message` is only safe after `value instanceof Error`. This matters in async code, where a rejected Promise often carries an `Error` but a caller might also pass a plain string.

@@ -1,37 +1,23 @@
 # Type Aliases vs Interface in TypeScript
 
-Type aliases and interfaces both describe the shape of data, but they are not interchangeable in every situation. I used to treat them as the same tool until a few assignment tasks forced me to look at what each one can actually do.
+Type aliases and interfaces both describe the shape of data. Although both provide type safety and largely interchangable but they are not interchangable in every scenario.
 
-A type alias names any TypeScript type. That includes object shapes, unions, intersections, tuples, and primitives. An interface always describes an object-like contract. Both can describe a `User` with `id` and `name`, so the overlap is real.
+A type alias names any TypeScript type. That includes object shapes, unions, intersections, tuples, and primitives. An interface always describes an object-like contract.
 
-```ts
-type User = {
-  id: number;
-  name: string;
-};
-
-interface Product {
-  id: number;
-  title: string;
-}
-
-type Status = "draft" | "published";
-```
-
-The first practical difference is flexibility. `Status` cannot be written as an interface because a string union is not an object. Tuples and function types are also a better fit for `type`. Interfaces shine when you model classes, public APIs, and objects that may grow over time.
-
-Declaration merging is the second difference. If I declare `interface Course` twice, TypeScript merges the properties. Type aliases do not merge; a second `type Course` is a conflict. Merging is useful in libraries, but it can hide mistakes in a small assignment file.
+The first diffenrece is declaration merging. Interfaces are "open", meaning if you declare an interface `User` twice in the same scope, TypeScript merges their properties into a single definition. Type aliases are "closed" and cannot be modified or re-declared after creation.
 
 ```ts
-interface Logger {
-  log(message: string): void;
+interface User {
+  id: number;
+  name: string
 }
 
-interface Logger {
-  warn(message: string): void;
+interface User {
+  age: number
 }
 ```
 
-Extending works on both sides, with slightly different syntax. An interface uses `extends`. A type alias uses `&`. I prefer `interface` for class-shaped objects and `type` for unions, tuples, and mapped combinations.
+Another one is type versality of type aliases. Type aliases offer broader utility because they can represent non-object shapes like union types (type Status = "open" | "closed"), tuples (type Pair = [string, number]), and primitive aliases (type ID = string), which interfaces cannot express directly.
 
-My rule is simple. Use `interface` for object contracts that other code should implement. Use `type` when the value might be a union, a tuple, or a computed type. That split keeps the code honest about what the data really is.
+## When we should choose one over the other
+We should use interfaces wherever we can, specifically defining object shapes, and if we can't use interface then we should use type aliases.
